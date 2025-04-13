@@ -26,7 +26,7 @@ class _WelcomeState extends State<Welcome> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Moveasy", style: TextStyle(fontSize: 50, color: AppColors.textColor),),
+                Image.asset('assets/images/logo.png'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
