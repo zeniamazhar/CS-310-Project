@@ -5,6 +5,7 @@ import 'package:moveasy/routes/signup.dart';
 import 'package:moveasy/routes/welcome.dart';
 import 'package:moveasy/routes/home.dart';
 
+
 void main() {
   runApp(MaterialApp(
     theme: ThemeData(
@@ -18,6 +19,7 @@ void main() {
       '/home': (context) => HomePage(),
       // We'll add a new route for the Card/List screen below
       '/movieList': (context) => MovieListScreen(),
+
     },
   ));
 }

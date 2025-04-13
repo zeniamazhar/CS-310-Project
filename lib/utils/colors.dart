@@ -6,4 +6,6 @@ class AppColors {
   static const Color buttonColor = Colors.indigo;
   static const Color textColor = Colors.lightBlueAccent;
   static const Color textSecondaryColor = Colors.white;
+
+
 }

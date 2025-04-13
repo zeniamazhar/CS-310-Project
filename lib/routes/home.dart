@@ -24,17 +24,17 @@ class _HomePageState extends State<HomePage> {
     } else if (pageIndex == 2) {
       // Show an AlertDialog that the Profile page is not implemented yet
       showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('Coming Soon!'),
-            content: Text('The profile page is not implemented yet.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text('OK'),
-              )
-            ],
-          ),
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Coming Soon!'),
+          content: Text('The profile page is not implemented yet.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('OK'),
+            )
+          ],
+        ),
       );
     }
   }
