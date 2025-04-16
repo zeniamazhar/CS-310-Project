@@ -1,24 +1,38 @@
-// user_data.dart
 class UserData {
-  // A map of email -> password
-  static final Map<String, String> _registeredUsers = {};
+  // email -> { name, username, password }
+  static final Map<String, Map<String, String>> _registeredUsers = {};
+  static String? _loggedInEmail;
 
-  // Register user if email not already used
-  // Returns true if registration succeeded, false if email already exists
-  static bool registerUser(String email, String password) {
+  static bool registerUser({
+    required String email,
+    required String password,
+    required String name,
+    required String username,
+  }) {
     if (_registeredUsers.containsKey(email)) {
-      // Email already taken
-      return false;
+      return false; // Already exists
     }
-    _registeredUsers[email] = password;
+
+    _registeredUsers[email] = {
+      'name': name,
+      'username': username,
+      'password': password,
+    };
     return true;
   }
 
-  // Check if email + password match
   static bool authenticate(String email, String password) {
     if (_registeredUsers.containsKey(email)) {
-      return _registeredUsers[email] == password;
+      return _registeredUsers[email]!['password'] == password;
     }
     return false;
+  }
+
+  static Map<String, String>? getUserInfo(String email) {
+    return _registeredUsers[email];
+  }
+
+  static void setLoggedInEmail(String email) {
+    _loggedInEmail = email;
   }
 }

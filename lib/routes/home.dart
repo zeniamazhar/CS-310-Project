@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moveasy/utils/colors.dart';
+import 'package:moveasy/utils/user_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -47,14 +48,39 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
 
       appBar: AppBar(
-        // Make the AppBar transparent if you want gradient behind it
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-
-        // Center an image as title:
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text("Log Out?"),
+                content: Text("Do you want to log out and go back to the Welcome Page?"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx), // cancel
+                    child: Text("Cancel"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Perform logout
+                      UserData.setLoggedInEmail('');
+                      Navigator.pop(ctx); // close dialog
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/welcome', (route) => false);
+                    },
+                    child: Text("Log Out"),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
         title: SizedBox(
-          height: 40, // Adjust as needed
+          height: 40,
           child: Image.asset('assets/images/logo_small.png'),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moveasy/utils/colors.dart';
 import 'package:moveasy/utils/user_data.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -11,24 +12,36 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
+  String name = '';
+  String username = '';
   String email = '';
   String pass = '';
+  String confirmPass = '';
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+
+  void navigateToLogin(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const SignUp(), // Replace with Login() if you have the widget
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 500),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // This makes the gradient visible behind the app bar
       extendBodyBehindAppBar: true,
-
       appBar: AppBar(
-        // Make the AppBar transparent if you want gradient behind it
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-
-        // Center an image as title:
         title: SizedBox(
-          height: 40, // Adjust as needed
+          height: 40,
           child: Image.asset('assets/images/logo_small.png'),
         ),
       ),
@@ -42,131 +55,172 @@ class _SignUpState extends State<SignUp> {
         ),
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             child: Form(
-              key: _formKey, // <--- Wrap with Form
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              key: _formKey,
+              child: ListView(
+                shrinkWrap: true,
                 children: [
-                  Text(
-                    "Sign Up",
-                    style: TextStyle(fontSize: 50, color: AppColors.textColor),
-                  ),
+                  Text("Sign Up",
+                      style: TextStyle(fontSize: 50, color: AppColors.textColor),
+                      textAlign: TextAlign.center),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        "New User? Register ",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: AppColors.textSecondaryColor,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/login');
-                        },
-                        child: Text(
-                          "here.",
+                      Text("Already a User? Login ",
                           style: TextStyle(
-                            fontSize: 20,
-                            color: AppColors.textSecondaryColor,
-                            decoration: TextDecoration.underline,
-                            decorationThickness: 3,
-                          ),
-                        ),
+                              fontSize: 18, color: AppColors.textSecondaryColor)),
+                      GestureDetector(
+                        onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+                        child: Text("here.",
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                decoration: TextDecoration.underline,
+                                decorationThickness: 2)),
                       )
                     ],
                   ),
                   SizedBox(height: 20),
 
-                  // Email field
+                  // Name
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      prefixIcon: Icon(Icons.person),
+                      filled: true,
+                      fillColor: AppColors.textSecondaryColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    validator: (val) =>
+                    val == null || val.isEmpty ? 'Please enter your name' : null,
+                    onChanged: (val) => setState(() => name = val),
+                  ),
+                  SizedBox(height: 15),
+
+                  // Username
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      prefixIcon: Icon(Icons.person_outline),
+                      filled: true,
+                      fillColor: AppColors.textSecondaryColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    validator: (val) =>
+                    val == null || val.isEmpty ? 'Please enter a username' : null,
+                    onChanged: (val) => setState(() => username = val),
+                  ),
+                  SizedBox(height: 15),
+
+                  // Email
                   TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      label: SizedBox(
-                        width: 100,
-                        child: Row(
-                          children: [Icon(Icons.email), Text('Email')],
-                        ),
-                      ),
-                      fillColor: AppColors.textSecondaryColor,
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email),
                       filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                      fillColor: AppColors.textSecondaryColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter an email';
                       }
-                      // Basic validation check - you can add a regex if you want
-                      if (!value.contains('@') || !value.contains('.')) {
+                      if (!EmailValidator.validate(value)) {
                         return 'Please enter a valid email address';
                       }
                       return null;
                     },
-                    onChanged: (val) {
-                      setState(() {
-                        email = val;
-                      });
-                    },
+                    onChanged: (val) => setState(() => email = val),
                   ),
                   SizedBox(height: 15),
 
-                  // Password field
+                  // Password
                   TextFormField(
-                    keyboardType: TextInputType.visiblePassword,
-                    obscureText: true, // hide password
+                    obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      label: SizedBox(
-                        width: 106,
-                        child: Row(
-                          children: [Icon(Icons.key), Text('Password')],
-                        ),
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
                       ),
-                      fillColor: AppColors.textSecondaryColor,
                       filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                      fillColor: AppColors.textSecondaryColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a password';
                       }
-                      // For demonstration, require at least 4 characters
-                      if (value.length < 4) {
-                        return 'Password must be at least 4 characters long';
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters long';
                       }
                       return null;
                     },
-                    onChanged: (val) {
-                      setState(() {
-                        pass = val;
-                      });
-                    },
+                    onChanged: (val) => setState(() => pass = val),
                   ),
                   SizedBox(height: 15),
+
+                  // Confirm Password
+                  TextFormField(
+                    obscureText: _obscureConfirmPassword,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      prefixIcon: Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscureConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
+                      ),
+                      filled: true,
+                      fillColor: AppColors.textSecondaryColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your password';
+                      }
+                      if (value != pass) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                    onChanged: (val) => setState(() => confirmPass = val),
+                  ),
+                  SizedBox(height: 20),
 
                   // Sign up button
                   ElevatedButton(
                     onPressed: () {
-                      // Validate fields
                       if (_formKey.currentState!.validate()) {
-                        // Attempt to register user
-                        bool success = UserData.registerUser(email, pass);
+                        bool success = UserData.registerUser(
+                          email: email,
+                          password: pass,
+                          name: name,
+                          username: username,
+                        );
                         if (success) {
-                          // Registered successfully
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Registration successful!'),
-                            ),
+                            SnackBar(content: Text('Registration successful!')),
                           );
-                          // Go to Home or login
-                          Navigator.pushNamed(context, '/login');
-                        } else {
-                          // Show alert dialog if email is taken
+                          Future.delayed(Duration(milliseconds: 800), () {
+                            Navigator.pushReplacementNamed(context, '/login');
+                          });
+                        }
+                        else {
                           showDialog(
                             context: context,
                             builder: (ctx) => AlertDialog(
@@ -182,12 +236,11 @@ class _SignUpState extends State<SignUp> {
                           );
                         }
                       } else {
-                        // Show alert dialog that form is invalid
                         showDialog(
                           context: context,
                           builder: (ctx) => AlertDialog(
                             title: Text('Invalid Form'),
-                            content: Text('Please fill all fields correctly.'),
+                            content: Text('Please fill in all fields correctly.'),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx),
@@ -200,12 +253,14 @@ class _SignUpState extends State<SignUp> {
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(AppColors.buttonColor),
-                      padding: WidgetStateProperty.all(EdgeInsets.symmetric(vertical: 15, horizontal: 20)),
+                      padding: WidgetStateProperty.all(
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 20)),
                       minimumSize: WidgetStateProperty.all(Size(double.infinity, 50)),
                     ),
                     child: Text(
-                      "Sign up",
-                      style: TextStyle(color: AppColors.textSecondaryColor, fontSize: 30),
+                      "Register",
+                      style: TextStyle(
+                          color: AppColors.textSecondaryColor, fontSize: 30),
                     ),
                   ),
                 ],
