@@ -21,22 +21,9 @@ class _HomePageState extends State<HomePage> {
     if (pageIndex == 0) {
       Navigator.pushNamed(context, '/home');
     } else if (pageIndex == 1) {
-      Navigator.pushNamed(context, '/movieList'); // The "User Library" screen
+      Navigator.pushNamed(context, '/movieList');
     } else if (pageIndex == 2) {
-      // Show an AlertDialog that the Profile page is not implemented yet
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('Coming Soon!'),
-          content: Text('The profile page is not implemented yet.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('OK'),
-            )
-          ],
-        ),
-      );
+      Navigator.pushNamed(context, '/profile');
     }
   }
 

@@ -211,6 +211,7 @@ class _SignUpState extends State<SignUp> {
                           password: pass,
                           name: name,
                           username: username,
+                          bio: "",
                         );
                         if (success) {
                           ScaffoldMessenger.of(context).showSnackBar(
