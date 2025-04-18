@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moveasy/utils/colors.dart';
+import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/movie.dart';
 import 'watch_later_page.dart';
 import 'favorites_page.dart';
@@ -84,14 +84,14 @@ class _MovieListScreenState extends State<MovieListScreen> {
             navigateToListPage(context, title, movieList);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.buttonColor,
+            backgroundColor: AppColors.darkButtonColor,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 4,
           ),
           child: Text(
             title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkButtonTextColor),
           ),
         ),
         SizedBox(height: 20),
@@ -105,7 +105,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
               return GestureDetector(
                 onTap: () => navigateToDetail(movie),
                 child: Card(
-                  color: Colors.white.withOpacity(0.9),
+                  color: AppColors.cardColor,
                   margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   elevation: 4,
                   shape: RoundedRectangleBorder(
@@ -122,7 +122,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: AppColors.primaryColor,
+                            color: AppColors.cardTextColor,
                           ),
                         ),
                         SizedBox(height: 8),
@@ -130,7 +130,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
                           'Year: ${movie.year}',
                           style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.buttonColor,
+                            color: AppColors.cardTextColor,
                           ),
                         ),
                       ],
@@ -150,7 +150,6 @@ class _MovieListScreenState extends State<MovieListScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'User Library',
       pageIndex: pageIndex,
       onTap: onNavigationTap,
       body: Container(
@@ -163,13 +162,16 @@ class _MovieListScreenState extends State<MovieListScreen> {
           ),
         ),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildMovieCarousel("Watch Later", watchLater),
-              buildMovieCarousel("Favorites", favorites),
-              buildMovieCarousel("Watch List", watchList),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.only(top: kToolbarHeight + 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildMovieCarousel("Watch Later", watchLater),
+                buildMovieCarousel("Favorites", favorites),
+                buildMovieCarousel("Watch List", watchList),
+              ],
+            ),
           ),
         ),
       ),

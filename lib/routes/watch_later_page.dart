@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moveasy/utils/colors.dart';
+import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/movie.dart';
 import 'movie_detail_page.dart';
 
@@ -41,7 +41,7 @@ class _WatchLaterPageState extends State<WatchLaterPage> {
                 );
               },
               child: Card(
-                color: Colors.white.withOpacity(0.9),
+                color: AppColors.cardColor,
                 margin: EdgeInsets.symmetric(vertical: 8),
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -57,7 +57,7 @@ class _WatchLaterPageState extends State<WatchLaterPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: AppColors.primaryColor,
+                          color: AppColors.cardTextColor,
                         ),
                       ),
                       SizedBox(height: 8),
@@ -65,7 +65,7 @@ class _WatchLaterPageState extends State<WatchLaterPage> {
                         'Year: ${movie.year}',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.buttonColor,
+                          color: AppColors.cardTextColor,
                         ),
                       ),
                     ],

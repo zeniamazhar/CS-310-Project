@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moveasy/utils/colors.dart';
+import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/movie.dart';
 
 class FavoritesPage extends StatelessWidget {
@@ -28,7 +28,7 @@ class FavoritesPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final movie = movies[index];
             return Card(
-              color: Colors.white.withOpacity(0.9),
+              color: AppColors.cardColor,
               margin: EdgeInsets.symmetric(vertical: 8),
               elevation: 4,
               shape: RoundedRectangleBorder(
@@ -44,7 +44,7 @@ class FavoritesPage extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        color: AppColors.primaryColor,
+                        color: AppColors.cardTextColor,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -52,7 +52,7 @@ class FavoritesPage extends StatelessWidget {
                       'Year: ${movie.year}',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.buttonColor,
+                        color: AppColors.cardTextColor,
                       ),
                     ),
                   ],

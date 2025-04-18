@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moveasy/utils/colors.dart';
+import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/movie.dart';
 
 class MovieDetailPage extends StatelessWidget {

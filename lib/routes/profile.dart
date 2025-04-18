@@ -36,7 +36,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: '',
       pageIndex: 2,
       onTap: (int index) {
         if (index == 0) {
@@ -63,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const CircleAvatar(
                       radius: 40,
                       backgroundColor: AppColors.secondaryButtonColor,
-                      child: Icon(Icons.person, size: 40, color: AppColors.primaryColor),
+                      child: Icon(Icons.person, size: 40, color: AppColors.secondaryColor),
                     ),
                     const SizedBox(height: 10),
                     Center(
@@ -79,14 +78,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           _obscurePassword = true;
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.buttonColor,
-                          foregroundColor: AppColors.buttonTextColor,
+                          backgroundColor: AppColors.darkButtonColor,
+                          foregroundColor: AppColors.darkButtonTextColor,
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        icon: const Icon(Icons.edit),
+                        icon: const Icon(Icons.edit, color: AppColors.secondaryColor),
                         label: const Text("Edit"),
                       ),
                     const SizedBox(height: 10),
@@ -102,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ? IconButton(
                         icon: Icon(
                           _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                          color: AppColors.textColor,
+                          color: AppColors.secondaryColor,
                         ),
                         onPressed: () {
                           setState(() {
@@ -120,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         "Notify upcoming movies",
                         style: TextStyle(color: AppColors.textColor),
                       ),
-                      activeColor: AppColors.buttonColor,
+                      activeColor: AppColors.darkButtonColor,
                       value: _notificationsEnabled,
                       onChanged: _editing
                           ? (val) {
@@ -186,7 +185,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
 
-            /// 🔒 Fixed Logout Button
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -223,8 +221,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   icon: const Icon(Icons.logout),
                   label: const Text("Log Out"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.buttonColor,
-                    foregroundColor: AppColors.buttonTextColor,
+                    backgroundColor: AppColors.darkButtonColor,
+                    foregroundColor: AppColors.darkButtonTextColor,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -257,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
         labelText: label,
         labelStyle: const TextStyle(color: AppColors.secondaryTextColor),
         filled: true,
-        fillColor: AppColors.secondaryButtonColor,
+        fillColor: AppColors.lightBackgroundColor,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(color: AppColors.borderColor),

@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:moveasy/utils/colors.dart';
 
 class AppScaffold extends StatelessWidget {
-  final String title;
   final Widget body;
   final int pageIndex;
   final Function(int) onTap;
 
   const AppScaffold({
-    required this.title,
     required this.body,
     required this.pageIndex,
     required this.onTap,
@@ -19,16 +17,28 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
         backgroundColor: AppColors.primaryColor,
+        elevation: 0,
+        centerTitle: true,
+
+        // 🧹 Removed the back button:
+        // leading: IconButton(...)
+
+        title: SizedBox(
+          height: 40,
+          child: Image.asset('assets/images/logo_small.png'),
+        ),
+
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {}, // search functionality will go here
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () {
+              // Search logic can go here
+            },
           ),
         ],
-        centerTitle: true,
       ),
+      extendBodyBehindAppBar: true,
       body: body,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: pageIndex,

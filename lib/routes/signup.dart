@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moveasy/utils/colors.dart';
+import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/user_data.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -62,20 +62,20 @@ class _SignUpState extends State<SignUp> {
                 shrinkWrap: true,
                 children: [
                   Text("Sign Up",
-                      style: TextStyle(fontSize: 50, color: AppColors.textColor),
+                      style: TextStyle(fontSize: 50, color: AppColors.titleColor),
                       textAlign: TextAlign.center),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text("Already a User? Login ",
                           style: TextStyle(
-                              fontSize: 18, color: AppColors.textSecondaryColor)),
+                              fontSize: 18, color: AppColors.textColor)),
                       GestureDetector(
                         onTap: () => Navigator.pushReplacementNamed(context, '/login'),
                         child: Text("here.",
                             style: TextStyle(
                                 fontSize: 18,
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 decoration: TextDecoration.underline,
                                 decorationThickness: 2)),
                       )
@@ -87,10 +87,12 @@ class _SignUpState extends State<SignUp> {
                   TextFormField(
                     decoration: InputDecoration(
                       labelText: 'Name',
-                      prefixIcon: Icon(Icons.person),
+                      labelStyle: TextStyle(fontSize: 16, color: AppColors.secondaryTextColor),
+                      prefixIcon: Icon(Icons.person, color: AppColors.secondaryColor),
                       filled: true,
-                      fillColor: AppColors.textSecondaryColor,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                      fillColor: AppColors.lightBackgroundColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: AppColors.borderColor)),
                     ),
                     validator: (val) =>
                     val == null || val.isEmpty ? 'Please enter your name' : null,
@@ -102,10 +104,12 @@ class _SignUpState extends State<SignUp> {
                   TextFormField(
                     decoration: InputDecoration(
                       labelText: 'Username',
-                      prefixIcon: Icon(Icons.person_outline),
+                      labelStyle: TextStyle(fontSize: 16, color: AppColors.secondaryTextColor),
+                      prefixIcon: Icon(Icons.person_outline, color: AppColors.secondaryColor),
                       filled: true,
-                      fillColor: AppColors.textSecondaryColor,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                      fillColor: AppColors.lightBackgroundColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: AppColors.borderColor)),
                     ),
                     validator: (val) =>
                     val == null || val.isEmpty ? 'Please enter a username' : null,
@@ -118,10 +122,12 @@ class _SignUpState extends State<SignUp> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
+                      labelStyle: TextStyle(fontSize: 16, color: AppColors.secondaryTextColor),
+                      prefixIcon: Icon(Icons.email, color: AppColors.secondaryColor),
                       filled: true,
-                      fillColor: AppColors.textSecondaryColor,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                      fillColor: AppColors.lightBackgroundColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: AppColors.borderColor)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -141,11 +147,13 @@ class _SignUpState extends State<SignUp> {
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock),
+                      labelStyle: TextStyle(fontSize: 16, color: AppColors.secondaryTextColor),
+                      prefixIcon: Icon(Icons.lock, color: AppColors.secondaryColor),
                       suffixIcon: IconButton(
                         icon: Icon(_obscurePassword
                             ? Icons.visibility_off
-                            : Icons.visibility),
+                            : Icons.visibility
+                        , color: AppColors.secondaryColor,),
                         onPressed: () {
                           setState(() {
                             _obscurePassword = !_obscurePassword;
@@ -153,8 +161,9 @@ class _SignUpState extends State<SignUp> {
                         },
                       ),
                       filled: true,
-                      fillColor: AppColors.textSecondaryColor,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                      fillColor: AppColors.lightBackgroundColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: AppColors.borderColor)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -174,11 +183,13 @@ class _SignUpState extends State<SignUp> {
                     obscureText: _obscureConfirmPassword,
                     decoration: InputDecoration(
                       labelText: 'Confirm Password',
-                      prefixIcon: Icon(Icons.lock_outline),
+                      labelStyle: TextStyle(fontSize: 16, color: AppColors.secondaryTextColor),
+                      prefixIcon: Icon(Icons.lock_outline, color: AppColors.secondaryColor),
                       suffixIcon: IconButton(
                         icon: Icon(_obscureConfirmPassword
                             ? Icons.visibility_off
-                            : Icons.visibility),
+                            : Icons.visibility,
+                            color: AppColors.secondaryColor),
                         onPressed: () {
                           setState(() {
                             _obscureConfirmPassword = !_obscureConfirmPassword;
@@ -186,8 +197,9 @@ class _SignUpState extends State<SignUp> {
                         },
                       ),
                       filled: true,
-                      fillColor: AppColors.textSecondaryColor,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                      fillColor: AppColors.lightBackgroundColor,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(color: AppColors.borderColor)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -253,7 +265,7 @@ class _SignUpState extends State<SignUp> {
                       }
                     },
                     style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(AppColors.buttonColor),
+                      backgroundColor: WidgetStatePropertyAll(AppColors.darkButtonColor),
                       padding: WidgetStateProperty.all(
                           EdgeInsets.symmetric(vertical: 15, horizontal: 20)),
                       minimumSize: WidgetStateProperty.all(Size(double.infinity, 50)),
@@ -261,7 +273,7 @@ class _SignUpState extends State<SignUp> {
                     child: Text(
                       "Register",
                       style: TextStyle(
-                          color: AppColors.textSecondaryColor, fontSize: 30),
+                          color: AppColors.darkButtonTextColor, fontSize: 30),
                     ),
                   ),
                 ],
