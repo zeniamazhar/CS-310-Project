@@ -25,3 +25,7 @@ ios/build/
 
 # macOS & Linux
 *.DS_Store
+
+# Firebase and sensitive files
+android/app/google-services.json
+
