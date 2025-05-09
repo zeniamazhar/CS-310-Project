@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/user_data.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -12,6 +14,8 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String name = '';
   String username = '';
   String email = '';
@@ -215,45 +219,40 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(height: 20),
 
                   // Sign up button
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        bool success = UserData.registerUser(
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        // Create the user with email and password using Firebase Authentication
+                        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
                           email: email,
                           password: pass,
-                          name: name,
-                          username: username,
-                          bio: "",
                         );
-                        if (success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Registration successful!')),
-                          );
-                          Future.delayed(Duration(milliseconds: 800), () {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          });
-                        }
-                        else {
-                          showDialog(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: Text('Registration Failed'),
-                              content: Text('This email is already registered.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(ctx),
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      } else {
+
+                        // Store additional user data in Firestore (e.g., name, username)
+                        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+                          'name': name,
+                          'username': username,
+                          'email': email,
+                          'bio': "",  // Default bio or you can leave it empty
+                        });
+
+                        // Show success message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Registration successful!')),
+                        );
+
+                        // Navigate to the login screen after a delay
+                        Future.delayed(Duration(milliseconds: 800), () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        });
+                      } catch (e) {
+                        // Handle errors, e.g., if the email is already in use
                         showDialog(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: Text('Invalid Form'),
-                            content: Text('Please fill in all fields correctly.'),
+                            title: Text('Registration Failed'),
+                            content: Text('Error: ${e.toString()}'),  // Show error message from Firebase
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx),
@@ -263,7 +262,23 @@ class _SignUpState extends State<SignUp> {
                           ),
                         );
                       }
-                    },
+                    } else {
+                      // If the form is invalid, show an error dialog
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: Text('Invalid Form'),
+                          content: Text('Please fill in all fields correctly.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(AppColors.darkButtonColor),
                       padding: WidgetStateProperty.all(
