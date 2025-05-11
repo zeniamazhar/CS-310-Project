@@ -224,17 +224,17 @@ class _SignUpState extends State<SignUp> {
                     if (_formKey.currentState!.validate()) {
                       try {
                         // Create the user with email and password using Firebase Authentication
-                        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        UserCredential creds = await FirebaseAuth.instance.createUserWithEmailAndPassword(
                           email: email,
                           password: pass,
                         );
 
                         // Store additional user data in Firestore (e.g., name, username)
-                        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+                        await FirebaseFirestore.instance.collection('users').doc(creds.user!.uid).set({
                           'name': name,
                           'username': username,
                           'email': email,
-                          'bio': "",  // Default bio or you can leave it empty
+                          'bio': "I love movies!",
                         });
 
                         // Show success message

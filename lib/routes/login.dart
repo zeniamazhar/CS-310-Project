@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/user_data.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -143,30 +144,29 @@ class _LoginState extends State<Login> {
 
                   // Sign in button
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
+                        email = email.trim();
+                        pass = pass.trim();
+
                         if (email == "debug") {
                           Navigator.pushReplacementNamed(context, '/home');
                         } else {
-                          bool authenticated = UserData.authenticate(email, pass);
-                          if (authenticated) {
+                          try {
+                            UserCredential creds = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: pass);
                             UserData.setLoggedInEmail(email);
                             Navigator.pushReplacementNamed(context, '/home');
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: Text('Login Failed'),
-                                content: Text(
-                                    'Invalid email or password. Please try again.'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(ctx),
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              ),
-                            );
+                          }
+                          on FirebaseAuthException catch (error) {
+                            showDialog(context: context, builder: (con) => AlertDialog(
+                              title: Text('Login Failed'),
+                              content: Text(error.code == 'user-not-found' ? 'No user found for that email.' :
+                              error.code == 'wrong-password' ? 'Wrong password provided.' :
+                              error.message ?? 'Login failed.'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(con), child: Text("Ok"),)
+                              ],
+                            ));
                           }
                         }
                       } else {

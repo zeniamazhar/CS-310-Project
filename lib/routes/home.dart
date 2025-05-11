@@ -18,11 +18,11 @@ class _HomePageState extends State<HomePage> {
     });
 
     if (index == 0) {
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/home');
     } else if (index == 1) {
-      Navigator.pushNamed(context, '/movieList');
+      Navigator.pushReplacementNamed(context, '/movieList');
     } else if (index == 2) {
-      Navigator.pushNamed(context, '/profile');
+      Navigator.pushReplacementNamed(context, '/profile');
     }
   }
 
