@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:moveasy/utils/AppColors.dart';
-import 'package:moveasy/utils/user_data.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,8 +13,6 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String name = '';
   String username = '';
   String email = '';

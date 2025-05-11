@@ -153,7 +153,7 @@ class _LoginState extends State<Login> {
                           Navigator.pushReplacementNamed(context, '/home');
                         } else {
                           try {
-                            UserCredential creds = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: pass);
+                            await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: pass);
                             UserData.setLoggedInEmail(email);
                             Navigator.pushReplacementNamed(context, '/home');
                           }
