@@ -49,7 +49,7 @@ class WatchListPage extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Year: ${movie.year}',
+                      'Year: ${movie.releaseDate}',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.cardTextColor,

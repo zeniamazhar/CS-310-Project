@@ -226,12 +226,16 @@ class _SignUpState extends State<SignUp> {
                           password: pass,
                         );
 
+
                         // Store additional user data in Firestore (e.g., name, username)
                         await FirebaseFirestore.instance.collection('users').doc(creds.user!.uid).set({
                           'name': name,
                           'username': username,
                           'email': email,
                           'bio': "I love movies!",
+                          'favorites': [],
+                          'watchList': [],
+                          'watchLater': []
                         });
 
                         // Show success message

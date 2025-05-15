@@ -6,6 +6,7 @@ import 'package:moveasy/routes/signup.dart';
 import 'package:moveasy/routes/welcome.dart';
 import 'package:moveasy/routes/home.dart';
 import 'package:moveasy/routes/profile.dart';
+import 'package:moveasy/routes/searchPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();  // Ensure Flutter bindings are initialized
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/movieList': (context) => MovieListScreen(),
         '/profile': (context) => ProfilePage(),
+        '/searchPage': (context) => SearchPage(),
       },
     );
   }

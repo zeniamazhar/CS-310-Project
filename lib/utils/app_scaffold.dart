@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:moveasy/utils/colors.dart';
+import 'package:moveasy/utils/AppColors.dart';
+import 'package:moveasy/routes/searchPage.dart';
+
 
 class AppScaffold extends StatelessWidget {
   final Widget body;
@@ -34,9 +36,13 @@ class AppScaffold extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () {
-              // Search logic can go here
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              );
             },
           ),
+
         ],
       ),
       extendBodyBehindAppBar: true,
@@ -44,8 +50,8 @@ class AppScaffold extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: pageIndex,
         onTap: onTap,
-        backgroundColor: AppColors.secondaryColor,
-        selectedItemColor: AppColors.textSecondaryColor,
+        backgroundColor: AppColors.secondaryTextColor,
+        selectedItemColor: AppColors.textColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.movie_creation_outlined), label: 'User Library'),
