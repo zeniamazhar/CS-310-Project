@@ -1,75 +1,17 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/app_scaffold.dart';
 import 'package:moveasy/utils/movie.dart';
 import 'package:moveasy/routes/movie_detail_page.dart';
+import 'package:moveasy/providers/movie_provider.dart';
 
 const String imageBaseUrl = 'https://image.tmdb.org/t/p/w200';
-const String apiKey = 'ca5edc9a327bd63a0f73c8a053537c37';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> trending = [];
-  List<Map<String, dynamic>> nowPlaying = [];
-  List<Map<String, dynamic>> upcoming = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    loadMovies();
-  }
-
-  Future<void> loadMovies() async {
-    try {
-      try {
-        final trendingData = await fetchMovies("trending/movie/week");
-        final nowPlayingData = await fetchMovies("movie/now_playing");
-        final upcomingData = await fetchMovies("movie/upcoming");
-
-        setState(() {
-          trending = trendingData;
-          nowPlaying = nowPlayingData;
-          upcoming = upcomingData;
-          isLoading = false;
-        });
-      } catch (e) {
-        print("Error loading TMDB movies: $e");
-        setState(() {
-          isLoading = false; // <- still stop spinner even if error
-        });
-      }
-
-    } catch (e) {
-      print("Error fetching movies: $e");
-    }
-
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  Future<List<Map<String, dynamic>>> fetchMovies(String category) async {
-    final url = 'https://api.themoviedb.org/3/$category?api_key=$apiKey';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-      return List<Map<String, dynamic>>.from(jsonData['results']);
-    } else {
-      throw Exception('Failed to load $category movies');
-    }
-  }
-
-  void navigateToDetails(Map<String, dynamic> movieData) {
+  void navigateToDetails(BuildContext context, Map<String, dynamic> movieData) {
     final movie = Movie(
       id: movieData['id'],
       title: movieData['title'] ?? '',
@@ -89,7 +31,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildMovieRow(List<Map<String, dynamic>> movies) {
+  Widget buildMovieRow(BuildContext context, List<Map<String, dynamic>> movies) {
     return SizedBox(
       height: 220,
       child: ListView.builder(
@@ -100,7 +42,7 @@ class _HomePageState extends State<HomePage> {
           final posterPath = movie['poster_path'];
 
           return GestureDetector(
-            onTap: () => navigateToDetails(movie),
+            onTap: () => navigateToDetails(context, movie),
             child: Container(
               width: 130,
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -142,34 +84,32 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget section(String title, List<Map<String, dynamic>> movies) {
+  Widget section(BuildContext context, String title, List<Map<String, dynamic>> movies) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: AppColors.titleColor,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+        Center(
+          child: Text(
+            title,
+            style: TextStyle(
+              color: AppColors.titleColor,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
         const SizedBox(height: 10),
-        buildMovieRow(movies),
+        buildMovieRow(context, movies),
         const SizedBox(height: 30),
       ],
     );
   }
 
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final movieState = ref.watch(movieProvider);
+
     return AppScaffold(
       pageIndex: 0,
       onTap: (index) {
@@ -187,15 +127,22 @@ class _HomePageState extends State<HomePage> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : ListView(
-          padding: const EdgeInsets.only(top: kToolbarHeight + 16, bottom: 20),
-          children: [
-            section("Trending Movies", trending),
-            section("New Releases", nowPlaying),
-            section("Upcoming", upcoming),
-          ],
+        child: movieState.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, _) => Center(
+            child: Text(
+              "Failed to load movies: $err",
+              style: const TextStyle(color: AppColors.textColor),
+            ),
+          ),
+          data: (movies) => ListView(
+            padding: const EdgeInsets.only(top: kToolbarHeight + 16, bottom: 20),
+            children: [
+              section(context, "Trending Movies", movies.trending),
+              section(context, "New Releases", movies.nowPlaying),
+              section(context, "Upcoming", movies.upcoming),
+            ],
+          ),
         ),
       ),
     );
