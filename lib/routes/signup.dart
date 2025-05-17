@@ -3,15 +3,17 @@ import 'package:moveasy/utils/AppColors.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moveasy/controllers/auth_controller.dart'; // Import the controller above
 
-class SignUp extends StatefulWidget {
+class SignUp extends ConsumerStatefulWidget {
   const SignUp({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  ConsumerState<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends ConsumerState<SignUp> {
   final _formKey = GlobalKey<FormState>();
   String name = '';
   String username = '';
@@ -32,9 +34,34 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
+  void handleSignUp() {
+    if (_formKey.currentState!.validate()) {
+      ref.read(signUpControllerProvider.notifier).signUp(
+        name: name,
+        username: username,
+        email: email,
+        password: pass,
+        onSuccess: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registration successful!')),
+          );
+          Navigator.pushReplacementNamed(context, '/login');
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (ctx) => const AlertDialog(
+          title: Text('Invalid Form'),
+          content: Text('Please fill in all fields correctly.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final signUpState = ref.watch(signUpControllerProvider);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -216,81 +243,11 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(height: 20),
 
                   // Sign up button
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      try {
-                        // Create the user with email and password using Firebase Authentication
-                        UserCredential creds = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                          email: email,
-                          password: pass,
-                        );
-
-
-                        // Store additional user data in Firestore (e.g., name, username)
-                        await FirebaseFirestore.instance.collection('users').doc(creds.user!.uid).set({
-                          'name': name,
-                          'username': username,
-                          'email': email,
-                          'bio': "I love movies!",
-                          'favorites': [],
-                          'watchList': [],
-                          'watchLater': []
-                        });
-
-                        // Show success message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Registration successful!')),
-                        );
-
-                        // Navigate to the login screen after a delay
-                        Future.delayed(Duration(milliseconds: 800), () {
-                          Navigator.pushReplacementNamed(context, '/login');
-                        });
-                      } catch (e) {
-                        // Handle errors, e.g., if the email is already in use
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text('Registration Failed'),
-                            content: Text('Error: ${e.toString()}'),  // Show error message from Firebase
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx),
-                                child: Text('OK'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                    } else {
-                      // If the form is invalid, show an error dialog
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: Text('Invalid Form'),
-                          content: Text('Please fill in all fields correctly.'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: Text('OK'),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(AppColors.darkButtonColor),
-                      padding: WidgetStateProperty.all(
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 20)),
-                      minimumSize: WidgetStateProperty.all(Size(double.infinity, 50)),
-                    ),
-                    child: Text(
-                      "Register",
-                      style: TextStyle(
-                          color: AppColors.darkButtonTextColor, fontSize: 30),
-                    ),
+                  ElevatedButton(
+                    onPressed: signUpState is AsyncLoading ? null : handleSignUp,
+                    child: signUpState is AsyncLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text("Register", style: TextStyle(fontSize: 30)),
                   ),
                 ],
               ),

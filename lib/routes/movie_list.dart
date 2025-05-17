@@ -5,15 +5,16 @@ import 'package:moveasy/utils/AppColors.dart';
 import 'package:moveasy/utils/movie.dart';
 import 'package:moveasy/utils/app_scaffold.dart';
 import 'movie_detail_page.dart';
-import 'package:moveasy/utils/movie.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moveasy/providers/user_movie_provider.dart';
 
-
-class MovieListScreen extends StatefulWidget {
+class MovieListScreen extends ConsumerStatefulWidget {
+  const MovieListScreen({Key? key}) : super(key: key);
   @override
-  State<MovieListScreen> createState() => _MovieListScreenState();
+  ConsumerState<MovieListScreen> createState() => _MovieListScreenState();
 }
 
-class _MovieListScreenState extends State<MovieListScreen> {
+class _MovieListScreenState extends ConsumerState<MovieListScreen> {
   int pageIndex = 1;
   Map<String, bool> isEditingMap = {
     'watchLater': false,
@@ -23,37 +24,11 @@ class _MovieListScreenState extends State<MovieListScreen> {
 
   void onNavigationTap(int index) {
     setState(() => pageIndex = index);
-
     if (index == 0) {
       Navigator.pushReplacementNamed(context, '/home');
     } else if (index == 2) {
       Navigator.pushReplacementNamed(context, '/profile');
     }
-  }
-
-  Future<List<Movie>> fetchMoviesFromList(String listName) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return [];
-
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-
-    final data = snapshot.data();
-    if (data == null || data[listName] == null) return [];
-
-    final List<dynamic> rawMovies = data[listName];
-    return rawMovies
-        .map((movie) => Movie(
-      id: movie['id'],
-      title: movie['title'] ?? '',
-      releaseDate: movie['release_date']?.split('-')[0] ?? 'Unknown',
-      posterPath: movie['poster_path'],
-      voteAverage: movie['vote_average'],
-      overview: movie['overview'],
-    ))
-        .toList();
   }
 
   Future<void> deleteMovieFromList(String listName, int movieId) async {
@@ -72,7 +47,8 @@ class _MovieListScreenState extends State<MovieListScreen> {
 
     await userRef.update({listName: movies});
 
-    setState(() {}); // Refresh UI after deletion
+    // Refresh UI after deletion
+    setState(() {});
   }
 
   void navigateToDetail(Movie movie) {
@@ -83,103 +59,97 @@ class _MovieListScreenState extends State<MovieListScreen> {
   }
 
   Widget buildMovieCarousel(String title, String listName) {
-    return FutureBuilder<List<Movie>>(
-      future: fetchMoviesFromList(listName),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+    final movieListState = ref.watch(userMovieListProvider);
 
-        final movies = snapshot.data ?? [];
+    return movieListState.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, st) => Center(child: Text('Error loading $title')),
+      data: (allLists) {
+        final movies = allLists[listName] ?? [];
         final isEditing = isEditingMap[listName] ?? false;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Center(
-            child: Row(
-              children: [
-                SizedBox(width:50),
-                Expanded(
-                  child: Center(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondaryButtonColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => MovieListDetailScreen(
-                              listName: listName,
-                              title: title,
-                            ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 50),
+                  Expanded(
+                    child: Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondaryButtonColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        );
-                      },
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.buttonTextColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => MovieListDetailScreen(
+                                listName: listName,
+                                title: title,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.buttonTextColor,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      if (isEditing) {
-                        isEditingMap.updateAll((key, value) => false);
-                      } else {
-                        isEditingMap.updateAll((key, value) => key == listName);
-                      }
-                    });
-                  },
-                  child: Text(
-                    isEditing ? "Done" : "Edit",
-                    style: TextStyle(color: Colors.white),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        if (isEditing) {
+                          isEditingMap.updateAll((key, value) => false);
+                        } else {
+                          isEditingMap.updateAll((key, value) => key == listName);
+                        }
+                      });
+                    },
+                    child: Text(
+                      isEditing ? "Done" : "Edit",
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-              ],
-            )
+                ],
+              ),
             ),
+            const SizedBox(height: 10),
 
-            SizedBox(height: 10),
             if (isEditing)
               movies.isEmpty
-                  ? Center(
-                child: Column(
-                    children:[
-                      SizedBox(height:40),
-                      Text("No movies added yet!",
-                    style: TextStyle(color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    SizedBox(height:40),]
+                  ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Text("No movies added yet!",
+                      style: TextStyle(color: Colors.white)),
+                ),
               )
-
-              ): ListView.builder(
+                  : ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: movies.length,
                 itemBuilder: (context, index) {
                   final movie = movies[index];
                   return Card(
                     color: Colors.grey[900],
-                    margin:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                     child: ListTile(
-                      contentPadding: EdgeInsets.all(12),
+                      contentPadding: const EdgeInsets.all(12),
                       leading: movie.posterPath != null
                           ? ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -190,20 +160,22 @@ class _MovieListScreenState extends State<MovieListScreen> {
                           fit: BoxFit.cover,
                         ),
                       )
-                          : Icon(Icons.movie, size: 80),
+                          : const Icon(Icons.movie, size: 80),
                       title: Text(movie.title,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold)),
                       subtitle: Text(movie.releaseDate,
-                          style:
-                          TextStyle(color: Colors.white70, fontSize: 14)),
+                          style: const TextStyle(color: Colors.white70, fontSize: 14)),
                       trailing: IconButton(
-                        icon: Icon(Icons.delete, color: Colors.redAccent),
-                        onPressed: () async {
-                          await deleteMovieFromList(listName, movie.id);
-                        },
+                        icon: const Icon(Icons.delete, color: Colors.redAccent),
+
+                          onPressed: () async {
+                            await ref.read(userMovieListProvider.notifier).deleteMovie(listName, movie.id);
+                          },
+
+
                       ),
                       onTap: () => navigateToDetail(movie),
                     ),
@@ -215,21 +187,13 @@ class _MovieListScreenState extends State<MovieListScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     movies.isEmpty
-                        ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(height: 40),
-                          Text("No movies added yet!",
-                              style: TextStyle(color: Colors.white)),
-                          SizedBox(height: 40),  // Added extra space here too
-                        ],
-                      ),
+                        ? const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
+                      child: Text("No movies added yet!",
+                          style: TextStyle(color: Colors.white)),
                     )
-
                         : SizedBox(
                       height: 220,
                       child: ListView.builder(
@@ -241,7 +205,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
                             onTap: () => navigateToDetail(movie),
                             child: Container(
                               width: 130,
-                              margin: EdgeInsets.symmetric(horizontal: 8),
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
                               child: Column(
                                 children: [
                                   ClipRRect(
@@ -256,18 +220,16 @@ class _MovieListScreenState extends State<MovieListScreen> {
                                       height: 160,
                                       width: 120,
                                       color: Colors.grey,
-                                      child: Icon(Icons.movie,
-                                          size: 40),
+                                      child: const Icon(Icons.movie, size: 40),
                                     ),
                                   ),
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                   Text(
                                     movie.title,
                                     textAlign: TextAlign.center,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style:
-                                    TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ],
                               ),
@@ -279,14 +241,12 @@ class _MovieListScreenState extends State<MovieListScreen> {
                   ],
                 ),
               ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         );
       },
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +254,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
       pageIndex: pageIndex,
       onTap: onNavigationTap,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [AppColors.primaryColor, AppColors.secondaryColor],
             begin: Alignment.topCenter,
@@ -304,20 +264,18 @@ class _MovieListScreenState extends State<MovieListScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Your Movies',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Your Movies',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  ],
+                  ),
                 ),
               ),
               Expanded(
@@ -339,7 +297,6 @@ class _MovieListScreenState extends State<MovieListScreen> {
       ),
     );
   }
-
 }
 
 class MovieListDetailScreen extends StatelessWidget {
@@ -391,18 +348,18 @@ class MovieListDetailScreen extends StatelessWidget {
         future: fetchMovies(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
 
           final movies = snapshot.data ?? [];
 
           if (movies.isEmpty) {
-            return Center(
+            return const Center(
                 child: Text("No movies added yet!",
                     style: TextStyle(color: Colors.white)));
           }
 
           return ListView.builder(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             itemCount: movies.length,
             itemBuilder: (context, index) {
               final movie = movies[index];
@@ -413,14 +370,14 @@ class MovieListDetailScreen extends StatelessWidget {
                   width: 50,
                   fit: BoxFit.cover,
                 )
-                    : Icon(Icons.movie, size: 40),
+                    : const Icon(Icons.movie, size: 40),
                 title: Text(
                   movie.title,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 subtitle: Text(
                   movie.releaseDate,
-                  style: TextStyle(color: Colors.white70),
+                  style: const TextStyle(color: Colors.white70),
                 ),
                 onTap: () => navigateToDetail(context, movie),
               );
