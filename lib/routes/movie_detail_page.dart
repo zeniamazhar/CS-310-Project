@@ -112,12 +112,12 @@ class MovieDetailPage extends StatelessWidget {
               const SizedBox(height: 20),
               Text(
                 movie.title,
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.titleColor),
               ),
               const SizedBox(height: 10),
               Text(
                 "Release Year: ${movie.releaseDate != null ? movie.releaseDate!.split('-')[0] : 'Unknown'}",
-                style: const TextStyle(fontSize: 20, color: Colors.white70),
+                style: const TextStyle(fontSize: 20, color: AppColors.textColor),
               ),
               const SizedBox(height: 10),
               Text(
@@ -125,26 +125,28 @@ class MovieDetailPage extends StatelessWidget {
                 style: const TextStyle(fontSize: 18, color: Colors.amber),
               ),
               const SizedBox(height: 30),
-              const Text("More details coming soon...",
-                  style: TextStyle(fontSize: 18, color: Colors.white60)),
+              Text(
+                movie.overview?.isNotEmpty == true ? movie.overview! : "No overview available.",
+                style: const TextStyle(fontSize: 16, color: AppColors.textColor),
+              ),
               const SizedBox(height: 40),
               Center(
                 child: Column(
                   children: [
                     ElevatedButton(
                       onPressed: () => addToList(context, 'favorites'),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-                      child: const Text('Add to Favorites'),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.buttonColor),
+                      child: const Text('Add to Favorites', style: TextStyle(color: AppColors.buttonTextColor)),
                     ),
                     ElevatedButton(
                       onPressed: () => addToList(context, 'watchList'),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Add to Watched'),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.buttonColor),
+                      child: const Text('Add to Watched', style: TextStyle(color: AppColors.buttonTextColor)),
                     ),
                     ElevatedButton(
                       onPressed: () => addToList(context, 'watchLater'),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                      child: const Text('Add to Watch Later'),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.buttonColor),
+                      child: const Text('Add to Watch Later', style: TextStyle(color: AppColors.buttonTextColor)),
                     ),
                   ],
                 ),
