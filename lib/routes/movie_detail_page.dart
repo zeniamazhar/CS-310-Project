@@ -28,6 +28,8 @@ class MovieDetailPage extends StatelessWidget {
       'overview': movie.overview,
       'release_date': movie.releaseDate,
       'vote_average': movie.voteAverage,
+      'createdAt': Timestamp.now(),
+      'createdBy': user.uid,
     };
 
     try {
