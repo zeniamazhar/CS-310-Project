@@ -5,6 +5,8 @@ class Movie {
   final String releaseDate;
   final double voteAverage;
   final String overview;
+  final DateTime? createdAt;
+  final String? createdBy;
 
   Movie({
     required this.id,
@@ -12,7 +14,9 @@ class Movie {
     required this.posterPath,
     required this.releaseDate,
     required this.voteAverage,
-    required this.overview
+    required this.overview,
+    required this.createdAt,
+    required this.createdBy,
   });
 
   factory Movie.fromMap(Map<String, dynamic> data) {
@@ -22,7 +26,9 @@ class Movie {
       posterPath: data['posterPath'],
       releaseDate: data['releaseDate'],
       voteAverage: (data['voteAverage'] ?? 0).toDouble(),
-      overview: data['overview']
+      overview: data['overview'],
+      createdAt: data['createdAt'] as DateTime?,
+      createdBy: data['createdBy'] as String?,
     );
   }
 
@@ -33,5 +39,7 @@ class Movie {
     'releaseDate': releaseDate,
     'overview': overview,
     'voteAverage': voteAverage,
+    'createdAt': createdAt,
+    'createdBy': createdBy,
   };
 }

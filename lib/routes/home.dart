@@ -21,6 +21,8 @@ class HomePage extends ConsumerWidget {
       voteAverage: (movieData['vote_average'] is int)
           ? (movieData['vote_average'] as int).toDouble()
           : movieData['vote_average'] ?? 0.0,
+        createdAt: movieData['createdAt'],
+        createdBy: movieData['createdBy']
     );
 
     Navigator.push(

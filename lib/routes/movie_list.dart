@@ -299,11 +299,25 @@ class _MovieListScreenState extends ConsumerState<MovieListScreen> {
   }
 }
 
-class MovieListDetailScreen extends StatelessWidget {
+class MovieListDetailScreen extends StatefulWidget {
   final String listName;
   final String title;
 
   MovieListDetailScreen({required this.listName, required this.title});
+
+  @override
+  _MovieListDetailScreenState createState() => _MovieListDetailScreenState();
+}
+
+class _MovieListDetailScreenState extends State<MovieListDetailScreen> {
+  bool _sortNewestFirst = true;
+  late Future<List<Movie>> _futureMovies;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureMovies = fetchMovies();
+  }
 
   Future<List<Movie>> fetchMovies() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -315,22 +329,37 @@ class MovieListDetailScreen extends StatelessWidget {
         .get();
 
     final data = snapshot.data();
-    if (data == null || data[listName] == null) return [];
+    if (data == null || data[widget.listName] == null) return [];
 
-    final List<dynamic> rawMovies = data[listName];
-    return rawMovies
-        .map((movie) => Movie(
+    final List<dynamic> rawMovies = data[widget.listName];
+
+    // Sort by createdAt timestamp based on _sortNewestFirst
+    rawMovies.sort((a, b) {
+      final aTime = (a['createdAt'] as Timestamp?)?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bTime = (b['createdAt'] as Timestamp?)?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return _sortNewestFirst ? bTime.compareTo(aTime) : aTime.compareTo(bTime);
+    });
+
+    return rawMovies.map((movie) => Movie(
       id: movie['id'],
       title: movie['title'] ?? '',
       releaseDate: movie['release_date']?.split('-')[0] ?? 'Unknown',
       posterPath: movie['poster_path'],
-      voteAverage: movie['vote_average'],
+      voteAverage: movie['vote_average']?.toDouble(),
       overview: movie['overview'],
-    ))
-        .toList();
+      createdAt: (movie['createdAt'] as Timestamp?)?.toDate(),
+      createdBy: movie['createdBy'] as String?,
+    )).toList();
   }
 
-  void navigateToDetail(BuildContext context, Movie movie) {
+  void _toggleSortOrder() {
+    setState(() {
+      _sortNewestFirst = !_sortNewestFirst;
+      _futureMovies = fetchMovies();  // re-fetch with new sort order
+    });
+  }
+
+  void navigateToDetail(Movie movie) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
@@ -341,11 +370,18 @@ class MovieListDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
         backgroundColor: AppColors.primaryColor,
+        actions: [
+          IconButton(
+            icon: Icon(_sortNewestFirst ? Icons.arrow_downward : Icons.arrow_upward),
+            tooltip: _sortNewestFirst ? 'Sort: Newest First' : 'Sort: Oldest First',
+            onPressed: _toggleSortOrder,
+          ),
+        ],
       ),
       body: FutureBuilder<List<Movie>>(
-        future: fetchMovies(),
+        future: _futureMovies,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
             return const Center(child: CircularProgressIndicator());
@@ -379,7 +415,7 @@ class MovieListDetailScreen extends StatelessWidget {
                   movie.releaseDate,
                   style: const TextStyle(color: Colors.white70),
                 ),
-                onTap: () => navigateToDetail(context, movie),
+                onTap: () => navigateToDetail(movie),
               );
             },
           );
@@ -389,3 +425,4 @@ class MovieListDetailScreen extends StatelessWidget {
     );
   }
 }
+

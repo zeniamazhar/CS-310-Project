@@ -39,16 +39,27 @@ class UserMovieListNotifier extends StateNotifier<AsyncValue<Map<String, List<Mo
 
       for (final listName in lists) {
         final List<dynamic> rawMovies = data[listName] ?? [];
-        result[listName] = rawMovies
-            .map((movie) => Movie(
+
+        // Map and parse movies including createdAt as DateTime
+        final movies = rawMovies.map((movie) => Movie(
           id: movie['id'],
           title: movie['title'] ?? '',
           releaseDate: movie['release_date']?.split('-')[0] ?? 'Unknown',
           posterPath: movie['poster_path'],
-          voteAverage: movie['vote_average'],
+          voteAverage: movie['vote_average']?.toDouble(),
           overview: movie['overview'],
-        ))
-            .toList();
+          createdAt: (movie['createdAt'] as Timestamp?)?.toDate(), // parse Timestamp to DateTime
+          createdBy: movie['createdBy'] as String?,
+        )).toList();
+
+        // Sort movies by createdAt descending (most recent first)
+        movies.sort((a, b) {
+          final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return bDate.compareTo(aDate);
+        });
+
+        result[listName] = movies;
       }
 
       state = AsyncValue.data(result);
@@ -56,6 +67,7 @@ class UserMovieListNotifier extends StateNotifier<AsyncValue<Map<String, List<Mo
       state = AsyncValue.error(e, st);
     });
   }
+
 
   Future<void> deleteMovie(String listName, int movieId) async {
     try {

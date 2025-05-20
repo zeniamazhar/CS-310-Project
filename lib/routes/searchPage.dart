@@ -68,6 +68,8 @@ class _SearchPageState extends State<SearchPage> {
           voteAverage: (movie['vote_average'] is int)
               ? (movie['vote_average'] as int).toDouble()
               : movie['vote_average'] ?? 0.0,
+          createdAt: movie['createdAt'],
+          createdBy: movie['createdBy']
         );
 
         Navigator.push(
