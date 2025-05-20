@@ -78,7 +78,7 @@ class _SearchPageState extends State<SearchPage> {
         );
       },
       child: Card(
-        color: Colors.white,
+        color: AppColors.cardColor,
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         child: Row(
           children: [
@@ -91,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
               errorBuilder: (_, __, ___) => Container(
                 width: 100,
                 height: 150,
-                color: Colors.black,
+                color: AppColors.backgroundColor,
               ),
             ),
             Expanded(
@@ -112,7 +112,7 @@ class _SearchPageState extends State<SearchPage> {
                       movie['release_date'] != null
                           ? movie['release_date'].split('-')[0]
                           : 'Unknown Year',
-                      style: const TextStyle(color: Colors.black),
+                      style: const TextStyle(color: AppColors.cardTextColor),
                     ),
                     Text(
                       movie['overview'] != null
@@ -123,11 +123,11 @@ class _SearchPageState extends State<SearchPage> {
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 20),
+                        const Icon(Icons.star, color: AppColors.warningColor, size: 20),
                         const SizedBox(width: 5),
                         Text(
                           "IMDb: ${movie['vote_average'] ?? 'N/A'} / 10",
-                          style: const TextStyle(color: Colors.black),
+                          style: const TextStyle(color: AppColors.warningColor),
                         ),
                       ],
                     ),
@@ -206,12 +206,12 @@ class _SearchPageState extends State<SearchPage> {
         title: TextField(
           autofocus: true,
           onChanged: _onSearchChanged,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: AppColors.textColor),
           decoration: InputDecoration(
             hintText: 'Search movies...',
-            hintStyle: TextStyle(color: Colors.grey[300]),
+            hintStyle: TextStyle(color: AppColors.darkButtonTextColor),
             border: InputBorder.none,
-            icon: const Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search, color: AppColors.darkButtonTextColor),
           ),
         ),
       ),
@@ -219,7 +219,7 @@ class _SearchPageState extends State<SearchPage> {
           ? const Center(
         child: Text(
           "No movies found",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: AppColors.textColor),
         ),
       )
           : ListView.builder(

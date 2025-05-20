@@ -124,7 +124,7 @@ class MovieDetailPage extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 "IMDb Rating: ${movie.voteAverage?.toStringAsFixed(1) ?? 'N/A'} / 10",
-                style: const TextStyle(fontSize: 18, color: Colors.amber),
+                style: const TextStyle(fontSize: 18, color: AppColors.warningColor),
               ),
               const SizedBox(height: 30),
               Text(
