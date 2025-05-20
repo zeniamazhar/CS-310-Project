@@ -247,8 +247,14 @@ class _SignUpState extends ConsumerState<SignUp> {
                     onPressed: signUpState is AsyncLoading ? null : handleSignUp,
                     child: signUpState is AsyncLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Register", style: TextStyle(fontSize: 30)),
-                  ),
+                        : const Text("Register", style: TextStyle(fontSize: 30, color: AppColors.darkButtonTextColor)),
+                    style: ButtonStyle(
+                      backgroundColor:
+                      WidgetStatePropertyAll(AppColors.darkButtonColor),
+                      padding: WidgetStateProperty.all(
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      ),
+                  ),)
                 ],
               ),
             ),
