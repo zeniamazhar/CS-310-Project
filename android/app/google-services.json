@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "331688230396",
+    "project_id": "cs310-f8da3",
+    "storage_bucket": "cs310-f8da3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331688230396:android:a1512552418801726ec679",
+        "android_client_info": {
+          "package_name": "com.example.moveasy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC31HWjWrtys-sGk0sVORiWHeoR067LjRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
