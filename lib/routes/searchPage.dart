@@ -10,7 +10,7 @@ import 'package:moveasy/utils/movie.dart';
 import 'package:moveasy/routes/movie_detail_page.dart';
 
 const String imageBaseUrl = 'https://image.tmdb.org/t/p/w200';
-const String apiKey = 'ca5edc9a327bd63a0f73c8a053537c37';
+const apiKey = String.fromEnvironment('TMDB_API_KEY');
 const String searchBaseUrl = 'https://api.themoviedb.org/3/search/movie';
 
 class SearchPage extends StatefulWidget {

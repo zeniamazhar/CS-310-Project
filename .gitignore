@@ -28,3 +28,6 @@ ios/build/
 
 # macOS/iOS system files
 *.icloud
+
+#environment
+.env

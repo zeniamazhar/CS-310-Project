@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-const apiKey = 'ca5edc9a327bd63a0f73c8a053537c37';
+const apiKey = String.fromEnvironment('TMDB_API_KEY');
 
 final movieProvider = AsyncNotifierProvider<MovieNotifier, MovieState>(MovieNotifier.new);
 
